@@ -1,5 +1,5 @@
 package oops;
-import ClassCode.Airth;
+
 public class Main {
     public static void main(String arg[])
     {
@@ -7,8 +7,6 @@ public class Main {
 
 
         Class2 c = new Class2();
-        Airth a = new Airth();
-        System.out.println(a.add(5,2));
         System.out.println(c.std(arr));
         System.out.println(c.mean(arr));
         System.out.println(c.median(arr));
