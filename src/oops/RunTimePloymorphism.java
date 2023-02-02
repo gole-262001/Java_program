@@ -30,6 +30,9 @@ class Lion extends Animal{
 public class RunTimePloymorphism {
 
     public static void main(String[] args) {
+        Animal a = new Animal();
+        a.eat();
+        a.sleep();
         Dog d = new Dog();
         d.eat();
         Cat c = new Cat();
@@ -37,8 +40,6 @@ public class RunTimePloymorphism {
         Lion l = new Lion();
         l.eat();
         l.sleep();
-
-
     }
 
 }
