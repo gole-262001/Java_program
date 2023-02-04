@@ -14,7 +14,7 @@ public class Calculator {
 
             if (opr == '+') {
 
-                int num2 = s.nextInt();
+              double  num2 = s.nextDouble();
                 ans += num2;
                 System.out.print(" = " +ans);
 
@@ -22,17 +22,17 @@ public class Calculator {
 
             else if (opr == '-') {
 
-                int num2 = s.nextInt();
+                double  num2 = s.nextDouble();
                 ans -= num2;
                 System.out.print(" = " +ans);
             } else if (opr == '*') {
 
-                int num2 = s.nextInt();
+                double  num2 = s.nextDouble();
                 ans *= num2;
                 System.out.print(" = " +ans);
             } else if (opr == '/') {
 
-                int num2 = s.nextInt();
+                double  num2 = s.nextDouble();
                 ans /= num2;
                 System.out.print(" = " +ans);
             } else System.exit(0);
