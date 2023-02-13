@@ -1,0 +1,123 @@
+package com.eo;
+
+// MapperCode
+
+import java.io.IOException;
+
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapred.MapReduceBase;
+import org.apache.hadoop.mapred.Mapper;
+import org.apache.hadoop.mapred.OutputCollector;
+import org.apache.hadoop.mapred.Reporter;
+
+public class EvenOddMapper extends MapReduceBase implements
+    Mapper<LongWritable, Text, Text, IntWritable> {
+
+  @Override
+  public void map(LongWritable key, Text value,
+      OutputCollector<Text, IntWritable> output, Reporter reporter)
+      throws IOException {
+	  
+    String[] data = value.toString().split( " ");
+    for(String num : data)
+    {
+    	int number = Integer.parseInt(num);
+    	if(number % 2 == 0)
+    	{
+    		output.collect(new Text("Even") , new IntWritable(number));
+    	}else{
+    		output.collect(new Text("Odd") , new IntWritable(number));
+    	}
+    	
+    }
+  }
+}
+
+//Reducer Code
+
+package com.eo;
+
+import java.io.IOException;
+import java.util.Iterator;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapred.OutputCollector;
+import org.apache.hadoop.mapred.MapReduceBase;
+import org.apache.hadoop.mapred.Reducer;
+import org.apache.hadoop.mapred.Reporter;
+
+public class EvenOddReducer extends MapReduceBase implements
+    Reducer<Text, IntWritable, Text, Text> {
+
+  @Override
+  public void reduce(Text key, Iterator<IntWritable> values,
+      OutputCollector<Text, Text> output, Reporter reporter)
+      throws IOException {
+    
+    String s = " ";
+    while(values.hasNext())
+    {
+    	IntWritable temp = values.next();
+    	s += temp + " ";
+    	
+    }
+   
+    
+    output.collect(key, new Text(s));
+  }
+}
+
+// Driver Code
+
+package com.eo;
+
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapred.FileInputFormat;
+import org.apache.hadoop.mapred.FileOutputFormat;
+import org.apache.hadoop.mapred.JobClient;
+import org.apache.hadoop.mapred.JobConf;
+
+import org.apache.hadoop.conf.Configured;
+import org.apache.hadoop.util.Tool;
+import org.apache.hadoop.util.ToolRunner;
+
+public class EvenOddDriver extends Configured implements Tool {
+
+  @Override
+  public int run(String[] args) throws Exception {
+
+
+    JobConf conf = new JobConf(getConf(), EvenOddDriver.class);
+    conf.setJobName(this.getClass().getName());
+
+    FileInputFormat.setInputPaths(conf, new Path(args[0]));
+    FileOutputFormat.setOutputPath(conf, new Path(args[1]));
+
+    conf.setMapperClass(EvenOddMapper.class);
+    conf.setReducerClass(EvenOddReducer.class);
+
+    conf.setMapOutputKeyClass(Text.class);
+    conf.setMapOutputValueClass(IntWritable.class);
+
+    conf.setOutputKeyClass(Text.class);
+    conf.setOutputValueClass(IntWritable.class);
+
+    JobClient.runJob(conf);
+    return 0;
+  }
+
+  public static void main(String[] args) throws Exception {
+    int exitCode = ToolRunner.run(new EvenOddDriver(), args);
+    System.exit(exitCode);
+  }
+}
+
+
+// commands to type
+hadoop fs -cat evenoddfile/outputNew/part-00000
+
+
