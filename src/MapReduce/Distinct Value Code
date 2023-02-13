@@ -1,0 +1,95 @@
+// Mapper Class
+package com.dv;
+
+
+import java.io.IOException;
+
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapred.MapReduceBase;
+import org.apache.hadoop.mapred.Mapper;
+import org.apache.hadoop.mapred.OutputCollector;
+import org.apache.hadoop.mapred.Reporter;
+
+public class DistinctMapper extends MapReduceBase implements
+    Mapper<LongWritable, Text, Text, Text> {
+
+  @Override
+  public void map(LongWritable key, Text value,
+      OutputCollector<Text, Text> output, Reporter reporter)
+      throws IOException {
+    String[] s = value.toString().split(" ");
+    String temp = " ";
+    for(int i =0; i < s.length; i++)
+    {
+    	String Word = s[i];
+    	int c = 0;
+    	for(int j = 0; j < s.length; j++)
+    	{
+    		if(Word.equals(s[j]))
+    		{
+    			c++;
+    		}
+    	}
+    
+    	if(c == 1)
+    	{
+    		temp += Word + " ";
+    	}
+    	
+    }
+    output.collect(new Text("Distinct Words are : "), new Text(temp));
+    
+  }
+}
+
+// Driver Class
+
+
+
+package com.dv;
+
+
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapred.FileInputFormat;
+import org.apache.hadoop.mapred.FileOutputFormat;
+import org.apache.hadoop.mapred.JobClient;
+import org.apache.hadoop.mapred.JobConf;
+
+import org.apache.hadoop.conf.Configured;
+import org.apache.hadoop.util.Tool;
+import org.apache.hadoop.util.ToolRunner;
+
+public class DriverClass extends Configured implements Tool {
+
+  @Override
+  public int run(String[] args) throws Exception {
+
+  
+    JobConf conf = new JobConf(getConf(), DriverClass.class);
+    conf.setJobName(this.getClass().getName());
+
+    FileInputFormat.setInputPaths(conf, new Path(args[0]));
+    FileOutputFormat.setOutputPath(conf, new Path(args[1]));
+
+    conf.setMapperClass(DistinctMapper.class);   
+    conf.setNumReduceTasks(0);
+
+
+    conf.setOutputKeyClass(Text.class);
+    conf.setOutputValueClass(Text.class);
+
+    JobClient.runJob(conf);
+    return 0;
+  }
+
+  public static void main(String[] args) throws Exception {
+    int exitCode = ToolRunner.run(new DriverClass(), args);
+    System.exit(exitCode);
+  }
+}
+
+
